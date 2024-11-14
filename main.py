@@ -17,10 +17,7 @@ st.set_page_config(
 from auth.handlers import handle_confirmation, logout
 from auth.forms import login_form, registration_form, password_reset_form
 from pages.home import show_home
-from pages.profile import show_profile
-from pages.settings import show_settings
-from pages.chat import chat  # Changed from show_chat to chat
-from utils.supabase_client import supabase, ensure_profile_exists
+from utils.supabase_client import supabase
 
 # Hide the Streamlit style and About menu
 hide_streamlit_style = """
@@ -59,8 +56,8 @@ def main():
     
     # Ensure profile exists for the user
     if user:
-        ensure_profile_exists(user)
-    
+        st.write(f"Skipping profile as user exists with, {user.email}")
+
     # Check if we're on the confirmation page
     query_params = st.query_params
     if "confirmation" in query_params:
@@ -70,7 +67,7 @@ def main():
             if user:
                 # Logged-in user menu
                 st.write(f"Welcome, {user.email}")
-                choice = st.selectbox("Menu", ["Home", "Profile", "Settings", "Chat"], key="menu_selectbox")
+                choice = st.selectbox("Menu", ["Home"], key="menu_selectbox")
                 
                 # Handle logout
                 if st.button("Logout", key="logout_button"):
@@ -92,12 +89,6 @@ def main():
         else:
             if choice == "Home":
                 show_home(user)
-            elif choice == "Profile":
-                show_profile(user)
-            elif choice == "Settings":
-                show_settings(user)
-            elif choice == "Chat":
-                chat()  # Changed from show_chat(user) to chat()
-                
+
 if __name__ == "__main__":
     main()
